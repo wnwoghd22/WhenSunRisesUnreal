@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Jay(wnwoghd22) All Rights Reserved.
 
 #pragma once
 
@@ -14,4 +14,6 @@ class WHENSUNRISESUNREAL_API AWSRPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void BeginPlay() override;
 };

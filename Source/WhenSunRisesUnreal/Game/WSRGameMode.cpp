@@ -1,14 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Jay(wnwoghd22) All Rights Reserved.
 
 
 #include "Game/WSRGameMode.h"
 
 AWSRGameMode::AWSRGameMode()
 {
-	ConstructorHelpers::FClassFinder<APawn> ThirdPersonClassRef(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter.BP_ThirdPersonCharacter_C"));
-	if (ThirdPersonClassRef.Class)
+	ConstructorHelpers::FClassFinder<APawn> DefaultPawnClassRef(TEXT("/Script/WhenSunRisesUnreal.WSRCharacterPlayer"));
+	if (DefaultPawnClassRef.Class)
 	{
-		DefaultPawnClass = ThirdPersonClassRef.Class;
+		DefaultPawnClass = DefaultPawnClassRef.Class;
 	}
 
 	ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassRef(TEXT("/Script/WhenSunRisesUnreal.WSRPlayerController"));

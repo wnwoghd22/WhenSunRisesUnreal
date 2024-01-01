@@ -1,5 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Jay(wnwoghd22) All Rights Reserved.
 
 
 #include "Player/WSRPlayerController.h"
 
+void AWSRPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FInputModeGameOnly GameOnlyInputMode;
+	SetInputMode(GameOnlyInputMode);
+}
