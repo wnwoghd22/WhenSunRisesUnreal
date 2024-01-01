@@ -19,7 +19,7 @@ class WHENSUNRISESUNREAL_API UWSRCharacterControlData : public UPrimaryDataAsset
 public:
 	UWSRCharacterControlData();
 
-// character base class
+// character base class section
 public:
 	UPROPERTY(EditAnywhere, Category = Pawn)
 	uint32 bUseControllerRotationYaw : 1;
@@ -33,11 +33,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = CharacterMovement)
 	FRotator RotationRate;
 
-// character player
+// character player section
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<class UInputMappingContext> InputMappingContext;
 
+	// Spring Arm Section
 	UPROPERTY(EditAnywhere, Category = SpringArm)
 	float TargetArmLength;
 
@@ -58,4 +59,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = SpringArm)
 	uint32 bDoColliisonTest : 1;
+
+	// Following Camera Section
+	UPROPERTY(EditAnywhere, Category = FollowCamera)
+	FVector CameraRelativeLocation;
 };

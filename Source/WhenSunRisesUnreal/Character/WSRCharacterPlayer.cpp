@@ -40,6 +40,12 @@ AWSRCharacterPlayer::AWSRCharacterPlayer()
 		FocusingMoveAction = InputActionFocusingMoveRef.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionFocusingLookRef(TEXT("/Script/EnhancedInput.InputAction'/Game/WhenSunRises/Input/Actions/IA_FocusingLook.IA_FocusingLook'"));
+	if (InputActionFocusingLookRef.Object != nullptr)
+	{
+		FocusingLookAction = InputActionFocusingLookRef.Object;
+	}
+
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionShoulderMoveRef(TEXT("/Script/EnhancedInput.InputAction'/Game/WhenSunRises/Input/Actions/IA_ShoulderMove.IA_ShoulderMove'"));
 	if (InputActionShoulderMoveRef.Object != nullptr)
 	{
@@ -70,11 +76,10 @@ void AWSRCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	EnhancedInputComponent->BindAction(FocusingMoveAction, ETriggerEvent::Triggered, this, &AWSRCharacterPlayer::FocusingMove);
+	EnhancedInputComponent->BindAction(FocusingLookAction, ETriggerEvent::Triggered, this, &AWSRCharacterPlayer::FocusingLook);
 	EnhancedInputComponent->BindAction(ShoulderMoveAction, ETriggerEvent::Triggered, this, &AWSRCharacterPlayer::ShoulderMove);
 	EnhancedInputComponent->BindAction(ShoulderLookAction, ETriggerEvent::Triggered, this, &AWSRCharacterPlayer::ShoulderLook);
 	EnhancedInputComponent->BindAction(ChangeControlAction, ETriggerEvent::Triggered, this, &AWSRCharacterPlayer::ChangeCharacterControl);
-
-
 }
 
 void AWSRCharacterPlayer::ChangeCharacterControl()
@@ -120,10 +125,30 @@ void AWSRCharacterPlayer::SetCharacterControlData(const UWSRCharacterControlData
 	CameraBoom->bInheritYaw = CharacterControlData->bInheritYaw;
 	CameraBoom->bInheritRoll = CharacterControlData->bInheritRoll;
 	CameraBoom->bDoCollisionTest = CharacterControlData->bDoColliisonTest;
+
+	FollowCamera->SetRelativeLocation(CharacterControlData->CameraRelativeLocation);
 }
 
 void AWSRCharacterPlayer::FocusingMove(const FInputActionValue& Value)
 {
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	AddMovementInput(ForwardDirection, MovementVector.X);
+	AddMovementInput(RightDirection, MovementVector.Y);
+}
+
+void AWSRCharacterPlayer::FocusingLook(const FInputActionValue& Value)
+{
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	AddControllerYawInput(LookAxisVector.X);
+	AddControllerPitchInput(LookAxisVector.Y);
 }
 
 void AWSRCharacterPlayer::ShoulderMove(const FInputActionValue& Value)
