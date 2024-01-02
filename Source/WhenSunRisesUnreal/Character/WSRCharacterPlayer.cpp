@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "WSRCharacterControlData.h"
+#include "Physics/WSRCollision.h"
 
 AWSRCharacterPlayer::AWSRCharacterPlayer()
 {
@@ -46,6 +47,12 @@ AWSRCharacterPlayer::AWSRCharacterPlayer()
 		FocusingLookAction = InputActionFocusingLookRef.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionFocusingHitRef(TEXT("/Script/EnhancedInput.InputAction'/Game/WhenSunRises/Input/Actions/IA_FocusingHit.IA_FocusingHit'"));
+	if (InputActionFocusingHitRef.Object != nullptr)
+	{
+		FocusingHitAction = InputActionFocusingHitRef.Object;
+	}
+
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionShoulderMoveRef(TEXT("/Script/EnhancedInput.InputAction'/Game/WhenSunRises/Input/Actions/IA_ShoulderMove.IA_ShoulderMove'"));
 	if (InputActionShoulderMoveRef.Object != nullptr)
 	{
@@ -58,6 +65,8 @@ AWSRCharacterPlayer::AWSRCharacterPlayer()
 		ShoulderLookAction = InputActionShoulderLookRef.Object;
 	}
 	CurrentCharacterControlType = ECharacterControlType::Shoulder;
+
+	InteractionTraceRange = 150.0f;
 }
 
 void AWSRCharacterPlayer::BeginPlay()
@@ -65,6 +74,15 @@ void AWSRCharacterPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	SetCharacterControl(CurrentCharacterControlType);
+}
+
+void AWSRCharacterPlayer::Tick(float DeltaSeconds)
+{
+	/** TODO:
+	 * make crosshair when focusing mode.
+	 * line trace to catch interactable,
+	 * if on hit, change crosshair
+	 */
 }
 
 void AWSRCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -77,6 +95,7 @@ void AWSRCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	EnhancedInputComponent->BindAction(FocusingMoveAction, ETriggerEvent::Triggered, this, &AWSRCharacterPlayer::FocusingMove);
 	EnhancedInputComponent->BindAction(FocusingLookAction, ETriggerEvent::Triggered, this, &AWSRCharacterPlayer::FocusingLook);
+	EnhancedInputComponent->BindAction(FocusingHitAction, ETriggerEvent::Triggered, this, &AWSRCharacterPlayer::FocusingHit);
 	EnhancedInputComponent->BindAction(ShoulderMoveAction, ETriggerEvent::Triggered, this, &AWSRCharacterPlayer::ShoulderMove);
 	EnhancedInputComponent->BindAction(ShoulderLookAction, ETriggerEvent::Triggered, this, &AWSRCharacterPlayer::ShoulderLook);
 	EnhancedInputComponent->BindAction(ChangeControlAction, ETriggerEvent::Triggered, this, &AWSRCharacterPlayer::ChangeCharacterControl);
@@ -149,6 +168,34 @@ void AWSRCharacterPlayer::FocusingLook(const FInputActionValue& Value)
 
 	AddControllerYawInput(LookAxisVector.X);
 	AddControllerPitchInput(LookAxisVector.Y);
+}
+
+void AWSRCharacterPlayer::FocusingHit()
+{
+	FHitResult OutHitResult;
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(Interact), false, this);
+
+	const FVector& TraceDirection = FollowCamera->GetForwardVector();
+	const FVector& Start = FollowCamera->GetComponentLocation() + TraceDirection * (CameraBoom->TargetArmLength + 10.0f);
+	const FVector End = Start + TraceDirection * InteractionTraceRange;
+
+	bool HitDetected = GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, CCHANNEL_WSR_HIT, Params);
+	if (HitDetected)
+	{
+		/** 
+		 * TODO: make interactable interface and cast here
+		 * - make less dependency
+		 */
+
+		OutHitResult.GetActor()->Destroy();
+	}
+
+#if ENABLE_DRAW_DEBUG
+
+	FColor DrawColor = HitDetected ? FColor::Green : FColor::Red;
+	DrawDebugLine(GetWorld(), Start, End, DrawColor, false, 10.0f);
+
+#endif
 }
 
 void AWSRCharacterPlayer::ShoulderMove(const FInputActionValue& Value)
