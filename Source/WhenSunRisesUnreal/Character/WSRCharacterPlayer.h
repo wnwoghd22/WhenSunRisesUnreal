@@ -5,13 +5,16 @@
 #include "CoreMinimal.h"
 #include "Character/WSRCharacterBase.h"
 #include "InputActionValue.h"
+#include "Interface/WSRWidgetInterface.h"
 #include "WSRCharacterPlayer.generated.h"
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnFocusedDelegate, bool /* InOnFocusing */);
 
 /**
  * 
  */
 UCLASS()
-class WHENSUNRISESUNREAL_API AWSRCharacterPlayer : public AWSRCharacterBase
+class WHENSUNRISESUNREAL_API AWSRCharacterPlayer : public AWSRCharacterBase, public IWSRWidgetInterface
 {
 	GENERATED_BODY()
 	
@@ -76,4 +79,15 @@ protected:
 	void ShoulderLook(const FInputActionValue& Value);
 
 	ECharacterControlType CurrentCharacterControlType;
+
+
+// UI Widget Section
+public:
+	FOnFocusedDelegate OnFocused;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Widget, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UWSRWidgetComponent> CrosshairWidget;
+
+	virtual void SetupWidget(class UWSRUserWidget* InUserWidget) override;
 };

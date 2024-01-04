@@ -25,4 +25,5 @@ class WHENSUNRISESUNREAL_API IWSRWidgetInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	virtual void SetupWidget(class UWSRUserWidget* InUserWidget) = 0;
 };

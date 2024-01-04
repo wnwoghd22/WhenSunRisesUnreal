@@ -14,4 +14,6 @@ class WHENSUNRISESUNREAL_API UWSRWidgetComponent : public UWidgetComponent
 {
 	GENERATED_BODY()
 	
+public:
+	virtual void InitWidget() override;
 };
