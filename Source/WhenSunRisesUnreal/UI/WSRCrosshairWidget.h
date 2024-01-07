@@ -3,19 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UI/WSRUserWidget.h"
+#include "Blueprint/UserWidget.h"
 #include "WSRCrosshairWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class WHENSUNRISESUNREAL_API UWSRCrosshairWidget : public UWSRUserWidget
+class WHENSUNRISESUNREAL_API UWSRCrosshairWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
-public:
-	UWSRCrosshairWidget(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void NativeConstruct() override;

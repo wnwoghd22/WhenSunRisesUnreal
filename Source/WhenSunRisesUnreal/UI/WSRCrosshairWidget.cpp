@@ -5,9 +5,6 @@
 #include "Components/Image.h"
 #include "Interface/WSRWidgetInterface.h"
 
-UWSRCrosshairWidget::UWSRCrosshairWidget(const FObjectInitializer& ObjectInitializer)
-{
-}
 
 void UWSRCrosshairWidget::NativeConstruct()
 {
@@ -16,11 +13,6 @@ void UWSRCrosshairWidget::NativeConstruct()
 	Crosshair = Cast<UImage>(GetWidgetFromName(TEXT("CrosshairDot")));
 	ensure(Crosshair);
 
-	IWSRWidgetInterface* WidgetInterface = Cast<IWSRWidgetInterface>(OwningActor);
-	if (WidgetInterface)
-	{
-		WidgetInterface->SetupWidget(this);
-	}
 }
 
 void UWSRCrosshairWidget::SetCrosshair(bool bInActive)

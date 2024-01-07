@@ -4,26 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "WSRWidgetInterface.generated.h"
+#include "WSRHUDInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UWSRWidgetInterface : public UInterface
+class UWSRHUDInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
 /**
- * WhenSunRises Widget Interface
  * 
- * All Objects with WSR prefix must implement this interface.
- * It links delegates of objects with a widget component.
  */
-class WHENSUNRISESUNREAL_API IWSRWidgetInterface
+class WHENSUNRISESUNREAL_API IWSRHUDInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void SetupWidget(class UWSRUserWidget* InUserWidget) = 0;
+	virtual void SetupHUDWidget(class UWSRHUDWidget* InHUDWidget) = 0;
 };
