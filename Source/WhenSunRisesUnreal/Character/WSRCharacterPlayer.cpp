@@ -9,7 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "WSRCharacterControlData.h"
 #include "Physics/WSRCollision.h"
-#include "UI/WSRWidgetComponent.h"
+#include "UI/WSRHUDWidget.h"
 #include "UI/WSRCrosshairWidget.h"
 
 AWSRCharacterPlayer::AWSRCharacterPlayer()
@@ -70,15 +70,7 @@ AWSRCharacterPlayer::AWSRCharacterPlayer()
 
 	InteractionTraceRange = 150.0f;
 
-	CrosshairWidget = CreateDefaultSubobject<UWSRWidgetComponent>(TEXT("Widget"));
-	CrosshairWidget->SetupAttachment(GetMesh());
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> CrosshairWidgetRef(TEXT("/Game/WhenSunRises/UI/WBP_Crosshair.WBP_Crosshair_C"));
-	if (CrosshairWidgetRef.Class)
-	{
-		CrosshairWidget->SetWidgetClass(CrosshairWidgetRef.Class);
-		CrosshairWidget->SetWidgetSpace(EWidgetSpace::Screen);
-	}
 }
 
 void AWSRCharacterPlayer::BeginPlay()
@@ -234,11 +226,12 @@ void AWSRCharacterPlayer::ShoulderLook(const FInputActionValue& Value)
 	AddControllerPitchInput(LookAxisVector.Y);
 }
 
-void AWSRCharacterPlayer::SetupWidget(UWSRUserWidget* InUserWidget)
+void AWSRCharacterPlayer::SetupHUDWidget(UWSRHUDWidget* InHUDWidget)
 {
-	UWSRCrosshairWidget* Crosshair = Cast<UWSRCrosshairWidget>(InUserWidget);
-	if (Crosshair)
+	if (InHUDWidget)
 	{
-		OnFocused.AddUObject(Crosshair, &UWSRCrosshairWidget::SetCrosshair);
+		InHUDWidget->UpdateCrosshair(false);
+
+		OnFocused.AddUObject(InHUDWidget, &UWSRHUDWidget::UpdateCrosshair);
 	}
 }

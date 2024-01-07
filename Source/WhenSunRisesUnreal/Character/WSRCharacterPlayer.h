@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/WSRCharacterBase.h"
 #include "InputActionValue.h"
-#include "Interface/WSRWidgetInterface.h"
+#include "Interface/WSRHUDInterface.h"
 #include "WSRCharacterPlayer.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnFocusedDelegate, bool /* InOnFocusing */);
@@ -14,7 +14,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnFocusedDelegate, bool /* InOnFocusing */)
  * 
  */
 UCLASS()
-class WHENSUNRISESUNREAL_API AWSRCharacterPlayer : public AWSRCharacterBase, public IWSRWidgetInterface
+class WHENSUNRISESUNREAL_API AWSRCharacterPlayer : public AWSRCharacterBase, public IWSRHUDInterface
 {
 	GENERATED_BODY()
 	
@@ -85,9 +85,6 @@ protected:
 public:
 	FOnFocusedDelegate OnFocused;
 
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Widget, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UWSRWidgetComponent> CrosshairWidget;
+	virtual void SetupHUDWidget(class UWSRHUDWidget* InHUDWidget) override;
 
-	virtual void SetupWidget(class UWSRUserWidget* InUserWidget) override;
 };
