@@ -68,7 +68,7 @@ AWSRCharacterPlayer::AWSRCharacterPlayer()
 	}
 	CurrentCharacterControlType = ECharacterControlType::Shoulder;
 
-	InteractionTraceRange = 150.0f;
+	InteractionTraceRange = 200.0f;
 
 
 }
@@ -82,11 +82,27 @@ void AWSRCharacterPlayer::BeginPlay()
 
 void AWSRCharacterPlayer::Tick(float DeltaSeconds)
 {
-	/** TODO:
-	 * make crosshair when focusing mode.
-	 * line trace to catch interactable,
-	 * if on hit, change crosshair
-	 */
+	if (CurrentCharacterControlType != ECharacterControlType::Focusing)
+	{
+		return;
+	}
+
+	FHitResult OutHitResult;
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(Interact), false, this);
+
+	const FVector& TraceDirection = FollowCamera->GetForwardVector();
+	const FVector& Start = FollowCamera->GetComponentLocation() + TraceDirection * (CameraBoom->TargetArmLength + 10.0f);
+	const FVector End = Start + TraceDirection * InteractionTraceRange;
+
+	bool HitDetected = GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, CCHANNEL_WSR_HIT, Params);
+	if (HitDetected)
+	{
+		OnTraceHit.Broadcast(true);
+	}
+	else
+	{
+		OnTraceHit.Broadcast(false);
+	}
 }
 
 void AWSRCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -110,6 +126,7 @@ void AWSRCharacterPlayer::ChangeCharacterControl()
 	if (CurrentCharacterControlType == ECharacterControlType::Focusing)
 	{
 		OnFocused.Broadcast(false);
+		OnTraceHit.Broadcast(false);
 		SetCharacterControl(ECharacterControlType::Shoulder);
 	}
 	else if (CurrentCharacterControlType == ECharacterControlType::Shoulder)
@@ -188,7 +205,7 @@ void AWSRCharacterPlayer::FocusingHit()
 	bool HitDetected = GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, CCHANNEL_WSR_HIT, Params);
 	if (HitDetected)
 	{
-		/** 
+		/**
 		 * TODO: make interactable interface and cast here
 		 * - make less dependency
 		 */
@@ -233,5 +250,9 @@ void AWSRCharacterPlayer::SetupHUDWidget(UWSRHUDWidget* InHUDWidget)
 		InHUDWidget->UpdateCrosshair(false);
 
 		OnFocused.AddUObject(InHUDWidget, &UWSRHUDWidget::UpdateCrosshair);
+
+		InHUDWidget->UpdateOnHitText(false);
+
+		OnTraceHit.AddUObject(InHUDWidget, &UWSRHUDWidget::UpdateOnHitText);
 	}
 }
