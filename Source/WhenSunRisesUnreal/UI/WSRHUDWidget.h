@@ -20,10 +20,15 @@ public:
 public:
 	void UpdateCrosshair(bool bInIsActive);
 
+	void UpdateOnHitText(bool bIsOnHit);
+
 protected:
 	virtual void NativeConstruct() override;
 
 protected:
 	UPROPERTY()
 	TObjectPtr<class UWSRCrosshairWidget> Crosshair;
+
+	UPROPERTY()
+	TObjectPtr<class UTextBlock> OnHitText;
 };

@@ -8,7 +8,8 @@
 #include "Interface/WSRHUDInterface.h"
 #include "WSRCharacterPlayer.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnFocusedDelegate, bool /* InOnFocusing */);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnFocusedDelegate, bool /*InOnFocusing*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnTraceHitDelegate, bool /*InOnTraceHit*/);
 
 /**
  * 
@@ -84,6 +85,7 @@ protected:
 // UI Widget Section
 public:
 	FOnFocusedDelegate OnFocused;
+	FOnTraceHitDelegate OnTraceHit;
 
 	virtual void SetupHUDWidget(class UWSRHUDWidget* InHUDWidget) override;
 
