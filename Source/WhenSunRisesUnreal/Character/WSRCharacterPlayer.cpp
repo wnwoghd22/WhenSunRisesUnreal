@@ -11,6 +11,7 @@
 #include "Physics/WSRCollision.h"
 #include "UI/WSRHUDWidget.h"
 #include "UI/WSRCrosshairWidget.h"
+#include "Interface/WSRInteractableInterface.h"
 
 AWSRCharacterPlayer::AWSRCharacterPlayer()
 {
@@ -209,8 +210,11 @@ void AWSRCharacterPlayer::FocusingHit()
 		 * TODO: make interactable interface and cast here
 		 * - make less dependency
 		 */
-
-		OutHitResult.GetActor()->Destroy();
+		IWSRInteractableInterface* Interactable = Cast<IWSRInteractableInterface>(OutHitResult.GetActor());
+		if (Interactable)
+		{
+			Interactable->Interact();
+		}
 	}
 
 #if ENABLE_DRAW_DEBUG
